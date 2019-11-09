@@ -29,14 +29,26 @@
 
 #include <Wire.h>
 
+//#define Wire Wire1
+#define Serial SerialUSB
+#define TCAADDR 0x70
+
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+ 
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();  
+}
 
 void setup()
 {
   Wire.begin();
-
   Serial.begin(115200);
   while (!Serial);             // Leonardo: wait for serial monitor
   Serial.println("\nI2C Scanner");
+  
+ // tcaselect(7);
 }
 
 
@@ -45,7 +57,9 @@ void loop()
   byte error, address;
   int nDevices;
 
+  Serial.begin(115200);
   Serial.println("Scanning...");
+  Wire.begin();
 
   nDevices = 0;
   for(address = 1; address < 128; address++ ) 
@@ -53,6 +67,7 @@ void loop()
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
+
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
 
